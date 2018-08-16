@@ -9,9 +9,14 @@ import java.util.Map;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.hcl.ott.ingestion.exception.IngestionException;
+import com.hcl.ott.ingestion.model.UserCredentials;
+import com.hcl.ott.ingestion.util.IngestionConstants;
 
 /**
  * FTP Storage component
@@ -29,23 +34,25 @@ public class FtpStorage
     /**
      * Download requested files InputStram from FTP Server using FTP Client
      * 
-     * @param hostName
-     * @param userName
-     * @param password
-     * @param portNumber
-     * @param remoteFile
+     * @param UserCredentials - Credential to connect FTP Server and download Requested file
      * @return InputStream - InputStream of requested file
      * 
      * @throws SocketException
      * @throws IOException
+     * @throws IngestionException 
      */
-    public InputStream downloadFile(String hostName, String userName, String password, String portNumber, String remoteFile) throws SocketException, IOException
+    public Map<String, Object> downloadFile(UserCredentials userCredentials) throws SocketException, IOException, IngestionException
     {
-        int port = Integer.parseInt(portNumber);
 
-        logger.debug(" GET FTP CLIENT TO DOWNLOAD FILE FROM FTP SERVER ");
-        FTPClient ftpClient = getFTPClient(hostName, userName, password, port);
-        InputStream mediaFileStream = ftpClient.retrieveFileStream(remoteFile);
+        logger.debug(" FTP SERVICE : GET FTP CLIENT TO DOWNLOAD FILE FROM FTP SERVER ");
+
+        FTPClient ftpClient = getFTPClient(userCredentials);
+
+        FTPFile file = ftpClient.mlistFile(userCredentials.getRemoteFile());
+        long size = file.getSize();
+
+        InputStream mediaFileStream = ftpClient.retrieveFileStream(userCredentials.getRemoteFile());
+
         boolean success = ftpClient.completePendingCommand();
         if (success)
         {
@@ -57,57 +64,47 @@ public class FtpStorage
                 ftpClient.disconnect();
             }
         }
-        return mediaFileStream;
+        else
+        {
+            System.out.println(" commands " + success);
+        }
+        logger.debug(" FTP SERVICE : SUCCESSFULLY DOWNLOADED FILE FROM FTP SERVER ");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put(IngestionConstants.FTP_CONTENTLENGTH, size);
+        map.put(IngestionConstants.FTP_INPUTSTREAM, mediaFileStream);
+        return map;
     }
 
 
     /**
-     * Returns Configured FTP Client to retrive file from ftp server
+     * Returns Configured FTP Client to retrieve file from FTP server
      * 
-     * @param hostName
-     * @param userName
-     * @param password
-     * @param port
+     * @param UserCredentials - Credential to connect FTP Server and download Requested file
      * @return FTPClient
      * @throws SocketException - Thrown to indicate that there is an error creating or accessing a Socket.
      * @throws IOException - Signals that an I/O exception of some sort has occurred.
+     * @throws IngestionException 
      */
-    private FTPClient getFTPClient(String hostName, String userName, String password, int port) throws SocketException, IOException
+    private FTPClient getFTPClient(UserCredentials userCredentials) throws SocketException, IOException, IngestionException
     {
         logger.debug(" MAKING FTP Client FOR FTP SERVER OPERTION ");
+        int port = Integer.parseInt(userCredentials.getPort());
         FTPClient ftpClient = new FTPClient();//FTP CLIENT TO CONNECT FTP SERVER
-        ftpClient.connect(hostName, port);
-        ftpClient.login(userName, password);
-        ftpClient.enterLocalPassiveMode();
+        ftpClient.connect(userCredentials.getHost(), port);
+
+        int replyCode = ftpClient.getReplyCode();
+        if (!FTPReply.isPositiveCompletion(replyCode))
+        {
+            logger.error("Operation failed. Server reply code: " + replyCode);
+            throw new IngestionException(" Operation failed. Server reply code: \" + replyCode ");
+        }
+        boolean success = ftpClient.login(userCredentials.getUser(), userCredentials.getPassword());
+        if (success)
+            logger.info(" FTP CLIENT : SUCCESSFULLY LOGIN TO FTP SERVER WITH USERNAME : " + userCredentials.getUser());
         ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
         return ftpClient;
-    }
-
-
-    public Map<String, InputStream> downloadFTPFiles(String hostName, String userName, String password, int port) throws SocketException, IOException
-    {
-        FTPClient ftpClient = getFTPClient(hostName, userName, password, port);
-        String Directory = "/HCL_ECMS/Video/";
-
-        FTPFile[] files = ftpClient.listFiles("/HCL_ECMS/Video/");
-        Map<String, InputStream> fileMap = new HashMap<String, InputStream>();
-
-        for (FTPFile ftpFile : files)
-        {
-            if (ftpFile.isFile())
-            {
-                InputStream tempStream = ftpClient.retrieveFileStream(Directory + ftpFile.getName());
-                boolean success = ftpClient.completePendingCommand();
-                if (success)
-                {
-                    fileMap.put(ftpFile.getName(), tempStream);
-                }
-            }
-        }
-
-        return fileMap;
-
     }
 
 }

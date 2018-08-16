@@ -2,6 +2,7 @@ package com.hcl.ott.ingestion.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import com.amazonaws.AmazonClientException;
 
@@ -13,5 +14,5 @@ import com.amazonaws.AmazonClientException;
  */
 public interface IngestionStorageService
 {
-    public String uploadFile(String fileName, InputStream fileStream, String fileContentType, Long contentLength) throws AmazonClientException, IOException;
+    public Map<String, Object> uploadFile(String fileName, InputStream fileStream, String fileContentType, Long contentLength) throws AmazonClientException, IOException;
 }

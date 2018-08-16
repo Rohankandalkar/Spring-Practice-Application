@@ -1,6 +1,6 @@
 package com.hcl.ott.ingestion.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.hcl.ott.ingestion.model.MetaDataModel;
 
@@ -10,7 +10,7 @@ import com.hcl.ott.ingestion.model.MetaDataModel;
  * @author kandalakar.r
  *
  */
-public interface MetaDataRepository extends CrudRepository<MetaDataModel,Long>
+public interface MetaDataRepository extends JpaRepository<MetaDataModel,Long>
 {
 
 }

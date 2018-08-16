@@ -1,8 +1,10 @@
 package com.hcl.ott.ingestion.service.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +21,7 @@ import com.hcl.ott.ingestion.service.IngestionStorageService;
 import com.hcl.ott.ingestion.util.IngestionConstants;
 
 /**
- * Amazone Storage Component 
+ * Amazon Storage Component 
  * Implements IngestionStorageService Interface
  * 
  * @author kandalakar.r
@@ -52,20 +54,28 @@ public class AmazonStorage implements IngestionStorageService
      *@param fileSize
      *@return fileLocation - Uploaded file location
      *@exception AmazonClientException - If amazon s3 put request failed 
+     * @throws IOException 
      *
      */
     @Override
-    public String uploadFile(String fileName, InputStream fileStream, String fileContentType, Long fileSize) throws AmazonClientException
+    public Map<String, Object> uploadFile(String fileName, InputStream fileStream, String fileContentType, Long fileSize) throws AmazonClientException, IOException
     {
         logger.debug(" UPLOADING FILE TO AMAZON S3 BUCKET START ");
         String bucketName = getBucketName(fileContentType);
+        String fileKey = generateFileKey(fileName);
 
-        PutObjectRequest putObjectRequest = getPutObjectRequest(fileName, fileStream, fileContentType, bucketName, fileSize);
+        PutObjectRequest putObjectRequest = getPutObjectRequest(fileKey, fileStream, fileContentType, bucketName, fileSize);
+
         this.s3Client.putObject(putObjectRequest);
-        logger.debug(" FILE UPLOADED SUCCESSUFULLY TO AMAZON S3 BUCKET ");
+        String fileURL = this.s3Client.getUrl(bucketName, fileKey).toString();
 
-        String fileLocation = IngestionConstants.AWS_BASE_URL + putObjectRequest.getBucketName() + "/" + putObjectRequest.getKey();
-        return fileLocation;
+        String fileLocation = putObjectRequest.getBucketName() + "/" + putObjectRequest.getKey();
+
+        Map<String, Object> fileMetaData = new HashMap<String, Object>();
+        fileMetaData.put(IngestionConstants.FILE_INGESTION_URL, fileURL);
+        fileMetaData.put(IngestionConstants.FILE_LOCATION, fileLocation);
+        fileMetaData.put(IngestionConstants.FILE_KEY, fileKey);
+        return fileMetaData;
 
     }
 
@@ -79,12 +89,12 @@ public class AmazonStorage implements IngestionStorageService
      * @param bucketName
      * @param contentLength
      * @return PutObjectRequest
+     * @throws IOException 
      */
-    private PutObjectRequest getPutObjectRequest(String fileName, InputStream fileStream, String fileContentType, String bucketName, Long contentLength)
+    private PutObjectRequest getPutObjectRequest(String key, InputStream fileStream, String fileContentType, String bucketName, Long contentLength) throws IOException
     {
         PutObjectRequest putObjectRequest = new PutObjectRequest(null, null, null, null);
 
-        String key = generateFileKey(fileName);
         putObjectRequest.setKey(key);
         putObjectRequest.setInputStream(fileStream);
         putObjectRequest.setBucketName(bucketName);
@@ -110,11 +120,11 @@ public class AmazonStorage implements IngestionStorageService
     {
         String tempBucketName = this.bucketName;
 
-        if (fileContentType.contains("video"))
+        if (fileContentType.contains(IngestionConstants.FILE_CONTENT_TYPE_VIDEO))
         {
             tempBucketName = this.bucketVideoFolder;
         }
-        else if (fileContentType.contains("audio"))
+        else if (fileContentType.contains(IngestionConstants.FILE_CONTENT_TYPE_AUDIO))
         {
             tempBucketName = this.bucketAudioFolder;
         }
@@ -131,8 +141,8 @@ public class AmazonStorage implements IngestionStorageService
      */
     private String generateFileKey(String fileName)
     {
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-        String key = timeStamp + "_" + fileName;
+        String uniqueID = UUID.randomUUID().toString();
+        String key = uniqueID + "_" + fileName;
         return key;
     }
 

@@ -1,7 +1,7 @@
 package com.hcl.ott.ingestion.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -45,8 +45,19 @@ public class IngestionDaoImpl implements IngestionDao
     @Override
     public List<MetaDataModel> findAll()
     {
-        List<MetaDataModel> dataModelList = new ArrayList<MetaDataModel>();
-        this.metaDataRepository.findAll().forEach(m -> dataModelList.add(new MetaDataModel(m.getTitle(), m.getLocation(), m.getTags(), m.getDescription())));
-        return dataModelList;
+        return this.metaDataRepository.findAll();
     }
+
+
+    /** 
+     * Returns singal MetaData Object from database
+     * 
+     * @return MetaDataModel
+     */
+    @Override
+    public MetaDataModel getMetaDataById(Long id) throws NoSuchElementException
+    {
+        return this.metaDataRepository.findById(id).get();
+    }
+
 }

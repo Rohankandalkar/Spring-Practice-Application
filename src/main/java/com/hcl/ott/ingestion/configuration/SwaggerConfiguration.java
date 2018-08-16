@@ -35,7 +35,7 @@ public class SwaggerConfiguration
     private ApiInfo generateApiInfo()
     {
         return new ApiInfo(
-            "AssetManagment Service", "This service is to.", "Version 1.0 - mw", "urn:tos",
+            "Ingestion Service", "This service is to.", "Version 1.0 - mw", "urn:tos",
             "Kandalakar.r@hcl.com", "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0");
     }
 

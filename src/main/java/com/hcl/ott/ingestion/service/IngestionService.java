@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.hcl.ott.ingestion.data.MetaDataDTO;
 import com.hcl.ott.ingestion.exception.IngestionException;
+import com.hcl.ott.ingestion.model.UserCredentials;
 
 /**
  * Interface for Ingestion service
@@ -16,12 +17,21 @@ import com.hcl.ott.ingestion.exception.IngestionException;
 public interface IngestionService
 {
 
-    String uploadFile(MultipartFile mediaFile) throws IngestionException;
+    MetaDataDTO uploadFile(MultipartFile mediaFile) throws IngestionException;
+
 
     MetaDataDTO saveFileMetaData(MetaDataDTO metaData);
 
-    List<MetaDataDTO> getAllFiles() throws IngestionException;
 
-    String uploadFtpFile(String host, String user, String password, String port, String remoteFile) throws IngestionException;
+    List<MetaDataDTO> getAllFiles();
+
+
+    MetaDataDTO uploadFtpFile(UserCredentials userCredentials) throws IngestionException;
+
+
+    MetaDataDTO updateMetatdateStatus(MetaDataDTO metaDataDTO)throws IngestionException;
+
+
+    MetaDataDTO getMetaData(String id) throws IngestionException;
 
 }

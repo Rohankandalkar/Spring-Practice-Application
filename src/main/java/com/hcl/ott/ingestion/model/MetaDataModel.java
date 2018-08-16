@@ -22,7 +22,7 @@ public class MetaDataModel
     @Column(nullable = false)
     private Long id;
 
-    @Column(name = "Title", nullable = false)
+    @Column(name = "Title")
     private String title;
 
     @Column(name = "Desciption")
@@ -31,8 +31,38 @@ public class MetaDataModel
     @Column(name = "Tags")
     private String[] tags;
 
-    @Column(name = "Location")
-    private String location;
+    @Column(name = "FileKey")
+    private String fileKey;
+
+    @Column(name = "FileSize")
+    private Long fileSize;
+
+    @Column(name = "FileContentType")
+    private String fileContentType;
+
+    @Column(name = "IngestionLocation")
+    private String ingestionFileLocation;
+
+    @Column(name = "IngestionURL")
+    private String ingestionURL;
+
+    @Column(name = "ProcessFileLocation")
+    private String ProcessFileLocation;
+
+    @Column(name = "ProcessURL")
+    private String processURL;
+    
+    @Column(name = "processFormat")
+    private String processFormat;
+
+    @Column(name = "PublishFileLocation")
+    private String PublishFileLocation;
+
+    @Column(name = "PublishURL")
+    private String publishURL;
+
+    @Column(name = "FileStatus")
+    private String fileStatus;
 
 
     public MetaDataModel()
@@ -41,14 +71,44 @@ public class MetaDataModel
     }
 
 
-    public MetaDataModel(String title, String description, String[] tags, String location)
+    
+
+    public MetaDataModel(
+        String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
+        String processFileLocation, String processURL, String processFormat, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
         this.title = title;
         this.description = description;
         this.tags = tags;
-        this.location = location;
+        this.fileKey = fileKey;
+        this.fileSize = fileSize;
+        this.fileContentType = fileContentType;
+        this.ingestionFileLocation = ingestionFileLocation;
+        this.ingestionURL = ingestionURL;
+        ProcessFileLocation = processFileLocation;
+        this.processURL = processURL;
+        this.processFormat = processFormat;
+        PublishFileLocation = publishFileLocation;
+        this.publishURL = publishURL;
+        this.fileStatus = fileStatus;
     }
+
+
+    public String getProcessFormat()
+    {
+        return processFormat;
+    }
+
+
+
+
+    public void setProcessFormat(String processFormat)
+    {
+        this.processFormat = processFormat;
+    }
+
+
 
 
     public Long getId()
@@ -99,15 +159,123 @@ public class MetaDataModel
     }
 
 
-    public String getLocation()
+    public String getFileKey()
     {
-        return location;
+        return fileKey;
     }
 
 
-    public void setLocation(String location)
+    public void setFileKey(String fileKey)
     {
-        this.location = location;
+        this.fileKey = fileKey;
+    }
+
+
+    public Long getFileSize()
+    {
+        return fileSize;
+    }
+
+
+    public void setFileSize(Long fileSize)
+    {
+        this.fileSize = fileSize;
+    }
+
+
+    public String getFileContentType()
+    {
+        return fileContentType;
+    }
+
+
+    public void setFileContentType(String fileContentType)
+    {
+        this.fileContentType = fileContentType;
+    }
+
+
+    public String getIngestionFileLocation()
+    {
+        return ingestionFileLocation;
+    }
+
+
+    public void setIngestionFileLocation(String ingestionFileLocation)
+    {
+        this.ingestionFileLocation = ingestionFileLocation;
+    }
+
+
+    public String getIngestionURL()
+    {
+        return ingestionURL;
+    }
+
+
+    public void setIngestionURL(String ingestionURL)
+    {
+        this.ingestionURL = ingestionURL;
+    }
+
+
+    public String getProcessFileLocation()
+    {
+        return ProcessFileLocation;
+    }
+
+
+    public void setProcessFileLocation(String processLocation)
+    {
+        this.ProcessFileLocation = processLocation;
+    }
+
+
+    public String getProcessURL()
+    {
+        return processURL;
+    }
+
+
+    public void setProcessURL(String processURL)
+    {
+        this.processURL = processURL;
+    }
+
+
+    public String getPublishFileLocation()
+    {
+        return PublishFileLocation;
+    }
+
+
+    public void setPublishFileLocation(String publishLocation)
+    {
+        PublishFileLocation = publishLocation;
+    }
+
+
+    public String getPublishURL()
+    {
+        return publishURL;
+    }
+
+
+    public void setPublishURL(String publishURL)
+    {
+        this.publishURL = publishURL;
+    }
+
+
+    public String getFileStatus()
+    {
+        return fileStatus;
+    }
+
+
+    public void setFileStatus(String fileStatus)
+    {
+        this.fileStatus = fileStatus;
     }
 
 }

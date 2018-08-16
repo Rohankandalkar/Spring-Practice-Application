@@ -1,13 +1,19 @@
 package com.hcl.ott.ingestion.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * Mapper class for Database Model object
  * 
  * @author kandalakar.r
  *
  */
+@JsonInclude(Include.NON_NULL)
 public class MetaDataDTO
 {
+
+    private Long id;
 
     private String title;
 
@@ -15,22 +21,79 @@ public class MetaDataDTO
 
     private String[] tags;
 
-    private String location;
+    private String fileKey;
+
+    private Long fileSize;
+
+    private String fileContentType;
+
+    private String ingestionFileLocation;
+
+    private String ingestionURL;
+
+    private String processFileLocation;
+
+    private String processURL;
+
+    private String processFormat;
+
+    private String publishFileLocation;
+
+    private String publishURL;
+
+    private String fileStatus;
 
 
     public MetaDataDTO()
     {
-
+        // TODO Auto-generated constructor stub
     }
 
 
-    public MetaDataDTO(String title, String description, String[] tags, String location)
+    public MetaDataDTO(
+        Long id, String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
+        String processFileLocation, String processURL, String processFormat, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
+        this.id = id;
         this.title = title;
         this.description = description;
         this.tags = tags;
-        this.location = location;
+        this.fileKey = fileKey;
+        this.fileSize = fileSize;
+        this.fileContentType = fileContentType;
+        this.ingestionFileLocation = ingestionFileLocation;
+        this.ingestionURL = ingestionURL;
+        this.processFileLocation = processFileLocation;
+        this.processURL = processURL;
+        this.processFormat = processFormat;
+        this.publishFileLocation = publishFileLocation;
+        this.publishURL = publishURL;
+        this.fileStatus = fileStatus;
+    }
+
+
+    public String getProcessFormat()
+    {
+        return processFormat;
+    }
+
+
+    public void setProcessFormat(String processFormat)
+    {
+        this.processFormat = processFormat;
+    }
+
+
+    public Long getId()
+    {
+        return id;
+    }
+
+
+    public void setId(Long id)
+    {
+        this.id = id;
     }
 
 
@@ -70,15 +133,123 @@ public class MetaDataDTO
     }
 
 
-    public String getLocation()
+    public String getFileKey()
     {
-        return location;
+        return fileKey;
     }
 
 
-    public void setLocation(String location)
+    public void setFileKey(String fileKey)
     {
-        this.location = location;
+        this.fileKey = fileKey;
+    }
+
+
+    public Long getFileSize()
+    {
+        return fileSize;
+    }
+
+
+    public void setFileSize(Long fileSize)
+    {
+        this.fileSize = fileSize;
+    }
+
+
+    public String getFileContentType()
+    {
+        return fileContentType;
+    }
+
+
+    public void setFileContentType(String fileContentType)
+    {
+        this.fileContentType = fileContentType;
+    }
+
+
+    public String getIngestionFileLocation()
+    {
+        return ingestionFileLocation;
+    }
+
+
+    public void setIngestionFileLocation(String ingestionFileLocation)
+    {
+        this.ingestionFileLocation = ingestionFileLocation;
+    }
+
+
+    public String getIngestionURL()
+    {
+        return ingestionURL;
+    }
+
+
+    public void setIngestionURL(String ingestionURL)
+    {
+        this.ingestionURL = ingestionURL;
+    }
+
+
+    public String getProcessFileLocation()
+    {
+        return processFileLocation;
+    }
+
+
+    public void setProcessFileLocation(String processFileLocation)
+    {
+        this.processFileLocation = processFileLocation;
+    }
+
+
+    public String getProcessURL()
+    {
+        return processURL;
+    }
+
+
+    public void setProcessURL(String processURL)
+    {
+        this.processURL = processURL;
+    }
+
+
+    public String getPublishFileLocation()
+    {
+        return publishFileLocation;
+    }
+
+
+    public void setPublishFileLocation(String publishFileLocation)
+    {
+        this.publishFileLocation = publishFileLocation;
+    }
+
+
+    public String getPublishURL()
+    {
+        return publishURL;
+    }
+
+
+    public void setPublishURL(String publishURL)
+    {
+        this.publishURL = publishURL;
+    }
+
+
+    public String getFileStatus()
+    {
+        return fileStatus;
+    }
+
+
+    public void setFileStatus(String fileStatus)
+    {
+        this.fileStatus = fileStatus;
     }
 
 }

@@ -1,8 +1,5 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
-.eclipse-pmd
-.mvn/
-mvnw*
 
 ### STS ###
 .apt_generated
