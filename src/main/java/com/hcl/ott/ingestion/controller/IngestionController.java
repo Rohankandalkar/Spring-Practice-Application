@@ -1,8 +1,12 @@
 package com.hcl.ott.ingestion.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.hcl.ott.ingestion.controller.mapper.ContentMapper;
 import com.hcl.ott.ingestion.data.IngestionResponseData;
 import com.hcl.ott.ingestion.data.MetaDataDTO;
+import com.hcl.ott.ingestion.data.UserCredentials;
 import com.hcl.ott.ingestion.exception.IngestionException;
-import com.hcl.ott.ingestion.model.UserCredentials;
-import com.hcl.ott.ingestion.service.IngestionService;
+import com.hcl.ott.ingestion.service.Async.IngestionAsyncService;
 
 /**
  * File Ingestion RestController 
@@ -32,64 +36,79 @@ import com.hcl.ott.ingestion.service.IngestionService;
 public class IngestionController
 {
     @Autowired
-    private IngestionService ingestionService;
+    @Qualifier("IngestionAsyncService")
+    private IngestionAsyncService ingestionAsyncService;
 
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<List<MetaDataDTO>>> getAllFiles() throws IngestionException
+    public ResponseEntity<IngestionResponseData<List<MetaDataDTO>>> getAllFiles(Pageable pageable) throws IngestionException, InterruptedException, ExecutionException
     {
-        List<MetaDataDTO> metaDataList = this.ingestionService.getAllFiles();
-        IngestionResponseData<List<MetaDataDTO>> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataList);
+        CompletableFuture<List<MetaDataDTO>> metaDataList = this.ingestionAsyncService.getAllFiles(pageable);
+        IngestionResponseData<List<MetaDataDTO>> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataList.get());
         return new ResponseEntity<IngestionResponseData<List<MetaDataDTO>>>(IngestionResponseData, HttpStatus.OK);
 
     }
 
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<MetaDataDTO>> uploadFile(@RequestParam(value = "file", required = true) MultipartFile mediaFile) throws IngestionException
+    public ResponseEntity<IngestionResponseData<MetaDataDTO>> uploadFile(@RequestParam(value = "file", required = true) MultipartFile mediaFile)
+        throws IngestionException, InterruptedException, ExecutionException
     {
-        MetaDataDTO fileMetaData = this.ingestionService.uploadFile(mediaFile);
-        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(fileMetaData);
+        CompletableFuture<MetaDataDTO> fileMetaData = this.ingestionAsyncService.uploadFile(mediaFile);
+        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(fileMetaData.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.CREATED);
 
     }
 
 
-    @RequestMapping(value = "/metadata", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<MetaDataDTO>> saveMetaData(@RequestBody MetaDataDTO metaDataDTO)
+    @RequestMapping(value = "/ftp/files", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<IngestionResponseData<List<MetaDataDTO>>> uploadMultipalFiles(@RequestParam(value = "file", required = true) MultipartFile excelFile)
+        throws IngestionException, InterruptedException, ExecutionException
     {
-        MetaDataDTO metaDataDT = this.ingestionService.saveFileMetaData(metaDataDTO);
-        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT);
+        CompletableFuture<List<MetaDataDTO>> fileMetaData = this.ingestionAsyncService.uploadMultipalFiles(excelFile);
+        IngestionResponseData<List<MetaDataDTO>> IngestionResponseData = ContentMapper.makeIngestionResponseData(fileMetaData.get());
+        return new ResponseEntity<IngestionResponseData<List<MetaDataDTO>>>(IngestionResponseData, HttpStatus.CREATED);
+
+    }
+
+
+    @RequestMapping(value = "/metadata", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<IngestionResponseData<MetaDataDTO>> saveMetaData(@RequestBody MetaDataDTO metaDataDTO) throws InterruptedException, ExecutionException
+    {
+        CompletableFuture<MetaDataDTO> metaDataDT = this.ingestionAsyncService.saveFileMetaData(metaDataDTO);
+        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/ftp", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IngestionResponseData<MetaDataDTO>> uploadFtpFile(@RequestBody UserCredentials userCredentials)
-        throws IngestionException
+        throws IngestionException, InterruptedException, ExecutionException
 
     {
-        MetaDataDTO metaDataDT = this.ingestionService.uploadFtpFile(userCredentials);
-        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT);
+        CompletableFuture<MetaDataDTO> metaDataDT = this.ingestionAsyncService.uploadFtpFile(userCredentials);
+        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.CREATED);
 
     }
 
 
     @RequestMapping(value = "/status", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<MetaDataDTO>> updateMetaDataStatus(@RequestBody MetaDataDTO metaDataDTO) throws IngestionException
+    public ResponseEntity<IngestionResponseData<MetaDataDTO>> updateMetaDataStatus(@RequestBody MetaDataDTO metaDataDTO)
+        throws IngestionException, InterruptedException, ExecutionException
     {
-        MetaDataDTO metaDataDT = this.ingestionService.updateMetatdateStatus(metaDataDTO);
-        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT);
+        System.out.println("UPDATE THIS STATUS :" + metaDataDTO.getFileStatus());
+        CompletableFuture<MetaDataDTO> metaDataDT = this.ingestionAsyncService.updateMetatdateStatus(metaDataDTO);
+        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<MetaDataDTO>> getMetaData(@PathVariable String id) throws IngestionException
+    public ResponseEntity<IngestionResponseData<MetaDataDTO>> getMetaData(@PathVariable("id") String id) throws IngestionException, InterruptedException, ExecutionException
     {
-        MetaDataDTO metaDataDT = this.ingestionService.getMetaData(id);
-        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT);
+        CompletableFuture<MetaDataDTO> metaDataDT = this.ingestionAsyncService.getMetaDataById(id);
+        IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.OK);
     }
 

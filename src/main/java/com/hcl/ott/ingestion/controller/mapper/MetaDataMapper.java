@@ -3,6 +3,8 @@ package com.hcl.ott.ingestion.controller.mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+
 import com.hcl.ott.ingestion.data.MetaDataDTO;
 import com.hcl.ott.ingestion.model.MetaDataModel;
 
@@ -44,6 +46,7 @@ public class MetaDataMapper
         model.setIngestionURL(metaDataDTO.getIngestionURL());
         model.setProcessFileLocation(metaDataDTO.getIngestionFileLocation());
         model.setProcessURL(metaDataDTO.getProcessURL());
+        model.setJobId(metaDataDTO.getJobId());
         model.setPublishFileLocation(metaDataDTO.getPublishFileLocation());
         model.setPublishURL(metaDataDTO.getPublishURL());
         model.setTags(metaDataDTO.getTags());
@@ -70,6 +73,7 @@ public class MetaDataMapper
         metaDataDTO.setIngestionURL(metaDataDBO.getIngestionURL());
         metaDataDTO.setProcessFileLocation(metaDataDBO.getProcessFileLocation());
         metaDataDTO.setProcessURL(metaDataDBO.getProcessURL());
+        metaDataDTO.setJobId(metaDataDBO.getJobId());
         metaDataDTO.setPublishFileLocation(metaDataDBO.getPublishFileLocation());
         metaDataDTO.setPublishURL(metaDataDBO.getPublishURL());
         metaDataDTO.setTags(metaDataDBO.getTags());
@@ -80,7 +84,7 @@ public class MetaDataMapper
     }
 
 
-    public static List<MetaDataDTO> makeMetaDataDTOList(List<MetaDataModel> metaDataList)
+    public static List<MetaDataDTO> makeMetaDataDTOList(Page<MetaDataModel> metaDataList)
     {
         // TODO Auto-generated method stub
         return metaDataList

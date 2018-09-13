@@ -25,7 +25,7 @@
 		<java.version>1.8</java.version>
 		<io.springfox.springfox-swagger2>2.3.1</io.springfox.springfox-swagger2>
 		<io.springfox.springfox-swagger-ui>2.3.1</io.springfox.springfox-swagger-ui>
-		<!-- <maven.test.skip>true</maven.test.skip> -->
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 
 	<dependencies>
@@ -46,9 +46,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-jpa</artifactId> 
+			</dependency> -->
+
+		<!-- spring-boot-starter-data-mongodb -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk -->
@@ -92,12 +96,25 @@
 			<version>2.6</version>
 		</dependency>
 
+		<!-- Dependency to read Excel files  -->
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.17</version>
+		</dependency>
+
+		<!-- Dependency to read Excel files  -->
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.17</version>
+		</dependency>
+
 		<!-- Dependency for Eureka Server -->
-		<!-- <dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-			<version>2.0.1.RELEASE</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId> 
+			<version>2.0.1.RELEASE</version> </dependency> -->
 	</dependencies>
 
 	<build>

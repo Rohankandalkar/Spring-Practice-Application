@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class MetaDataDTO
 {
 
-    private Long id;
+    private String id;
 
     private String title;
 
@@ -37,12 +37,13 @@ public class MetaDataDTO
 
     private String processFormat;
 
+    private String jobId;
+
     private String publishFileLocation;
 
     private String publishURL;
 
     private String fileStatus;
-
 
     public MetaDataDTO()
     {
@@ -50,9 +51,21 @@ public class MetaDataDTO
     }
 
 
+    public String getJobId()
+    {
+        return jobId;
+    }
+
+
+    public void setJobId(String jobId)
+    {
+        this.jobId = jobId;
+    }
+
+
     public MetaDataDTO(
-        Long id, String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
-        String processFileLocation, String processURL, String processFormat, String publishFileLocation, String publishURL, String fileStatus)
+        String id, String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
+        String processFileLocation, String processURL, String processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
         this.id = id;
@@ -67,6 +80,7 @@ public class MetaDataDTO
         this.processFileLocation = processFileLocation;
         this.processURL = processURL;
         this.processFormat = processFormat;
+        this.jobId = jobId;
         this.publishFileLocation = publishFileLocation;
         this.publishURL = publishURL;
         this.fileStatus = fileStatus;
@@ -85,13 +99,13 @@ public class MetaDataDTO
     }
 
 
-    public Long getId()
+    public String getId()
     {
         return id;
     }
 
 
-    public void setId(Long id)
+    public void setId(String id)
     {
         this.id = id;
     }

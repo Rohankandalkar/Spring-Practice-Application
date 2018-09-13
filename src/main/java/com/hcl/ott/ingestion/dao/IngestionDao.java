@@ -1,7 +1,9 @@
 package com.hcl.ott.ingestion.dao;
 
-import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.hcl.ott.ingestion.model.MetaDataModel;
 
@@ -13,12 +15,15 @@ import com.hcl.ott.ingestion.model.MetaDataModel;
  */
 public interface IngestionDao
 {
-    public MetaDataModel saveMetaData(MetaDataModel metaData);
+    MetaDataModel saveMetaData(MetaDataModel metaData);
 
 
-    public List<MetaDataModel> findAll();
+    Page<MetaDataModel> findAll(Pageable pageable);
 
 
-    public MetaDataModel getMetaDataById(Long id) throws NoSuchElementException;
+    MetaDataModel getMetaDataById(String id) throws NoSuchElementException;
+
+
+    MetaDataModel getMetaDataByJobId(String title);
 
 }

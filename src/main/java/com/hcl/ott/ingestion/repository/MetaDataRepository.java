@@ -1,6 +1,6 @@
 package com.hcl.ott.ingestion.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.hcl.ott.ingestion.model.MetaDataModel;
 
@@ -10,7 +10,7 @@ import com.hcl.ott.ingestion.model.MetaDataModel;
  * @author kandalakar.r
  *
  */
-public interface MetaDataRepository extends JpaRepository<MetaDataModel,Long>
+public interface MetaDataRepository extends MongoRepository<MetaDataModel,Object>
 {
-
+    MetaDataModel findByJobId(String jobId);
 }

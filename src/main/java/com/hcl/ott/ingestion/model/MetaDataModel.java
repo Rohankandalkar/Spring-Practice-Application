@@ -1,11 +1,7 @@
 package com.hcl.ott.ingestion.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Database Model(POJO) class 
@@ -13,55 +9,40 @@ import javax.persistence.Table;
  * @author kandalakar.r
  *
  */
-@Entity
-@Table(name = "metadata")
+@Document(collection = "metadata_model")
 public class MetaDataModel
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long id;
+    private String metaDataId;
 
-    @Column(name = "Title")
     private String title;
 
-    @Column(name = "Desciption")
     private String description;
 
-    @Column(name = "Tags")
     private String[] tags;
 
-    @Column(name = "FileKey")
     private String fileKey;
 
-    @Column(name = "FileSize")
     private Long fileSize;
 
-    @Column(name = "FileContentType")
     private String fileContentType;
 
-    @Column(name = "IngestionLocation")
     private String ingestionFileLocation;
 
-    @Column(name = "IngestionURL")
     private String ingestionURL;
 
-    @Column(name = "ProcessFileLocation")
     private String ProcessFileLocation;
 
-    @Column(name = "ProcessURL")
     private String processURL;
-    
-    @Column(name = "processFormat")
+
     private String processFormat;
 
-    @Column(name = "PublishFileLocation")
+    private String jobId;
+
     private String PublishFileLocation;
 
-    @Column(name = "PublishURL")
     private String publishURL;
 
-    @Column(name = "FileStatus")
     private String fileStatus;
 
 
@@ -71,11 +52,33 @@ public class MetaDataModel
     }
 
 
-    
+    public String getMetaDataId()
+    {
+        return metaDataId;
+    }
+
+
+    public void setMetaDataId(String metaDataId)
+    {
+        this.metaDataId = metaDataId;
+    }
+
+
+    public String getJobId()
+    {
+        return jobId;
+    }
+
+
+    public void setJobId(String jobId)
+    {
+        this.jobId = jobId;
+    }
+
 
     public MetaDataModel(
         String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
-        String processFileLocation, String processURL, String processFormat, String publishFileLocation, String publishURL, String fileStatus)
+        String processFileLocation, String processURL, String processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
         this.title = title;
@@ -89,6 +92,7 @@ public class MetaDataModel
         ProcessFileLocation = processFileLocation;
         this.processURL = processURL;
         this.processFormat = processFormat;
+        this.jobId = jobId;
         PublishFileLocation = publishFileLocation;
         this.publishURL = publishURL;
         this.fileStatus = fileStatus;
@@ -101,25 +105,21 @@ public class MetaDataModel
     }
 
 
-
-
     public void setProcessFormat(String processFormat)
     {
         this.processFormat = processFormat;
     }
 
 
-
-
-    public Long getId()
+    public String getId()
     {
-        return id;
+        return metaDataId;
     }
 
 
-    public void setId(Long id)
+    public void setId(String metaDataId)
     {
-        this.id = id;
+        this.metaDataId = metaDataId;
     }
 
 

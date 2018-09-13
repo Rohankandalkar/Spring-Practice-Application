@@ -14,9 +14,11 @@ public class IngestionConstants
     public static final String SUCCESS_MESSAGE = "SUCCESSFULLY DONE OPERATION";
     public static final String FILE_LOCATION = "FILE_LOCATION";
     public static final String FILE_KEY = "FILE_KEY";
+    public static final String FILE_STATUS_INGESTION_PROCESS = "DRAFTED";
     public static final String FILE_STATUS_INGESTION = "INGESTED";
     public static final String FILE_STATUS_PROCESS = "PROCESSED";
     public static final String FILE_STATUS_PUBLISH = "PUBLISHED";
+    public static final String FILE_STATUS_COMPLETE = "COMPLETE";
     public static final String FILE_INGESTION_URL = "FILE_INGESTION_URL";
     public static final String FILE_CONTENT_TYPE_VIDEO = "video";
     public static final String FILE_CONTENT_TYPE_AUDIO = "audio";

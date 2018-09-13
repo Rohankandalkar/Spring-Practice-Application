@@ -1,9 +1,10 @@
 package com.hcl.ott.ingestion.dao.impl;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.hcl.ott.ingestion.dao.IngestionDao;
@@ -43,9 +44,10 @@ public class IngestionDaoImpl implements IngestionDao
      * @return List<MetaDataModel>
      */
     @Override
-    public List<MetaDataModel> findAll()
+    public Page<MetaDataModel> findAll(Pageable pageable)
     {
-        return this.metaDataRepository.findAll();
+        return this.metaDataRepository.findAll(pageable);
+
     }
 
 
@@ -55,9 +57,26 @@ public class IngestionDaoImpl implements IngestionDao
      * @return MetaDataModel
      */
     @Override
-    public MetaDataModel getMetaDataById(Long id) throws NoSuchElementException
+    public MetaDataModel getMetaDataById(String id) throws NoSuchElementException
     {
-        return this.metaDataRepository.findById(id).get();
+        MetaDataModel metaDataModel = this.metaDataRepository.findById(id).get();
+       
+        return metaDataModel;
+    }
+
+
+    /** 
+     * Returns singal MetaData Object from database when update request came from aws lambda function
+     * 
+     * @param JobId - JobId created by Media converter AWS service
+     * @return MetaDataModel
+     */
+    @Override
+    public MetaDataModel getMetaDataByJobId(String jobId) throws NoSuchElementException
+    {
+        MetaDataModel metaDataModel = this.metaDataRepository.findByJobId(jobId);
+        System.out.println(" Completed id "+metaDataModel.getJobId());
+        return metaDataModel;
     }
 
 }

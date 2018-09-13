@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 import com.hcl.ott.ingestion.service.IngestionStorageService;
 import com.hcl.ott.ingestion.util.IngestionConstants;
 
@@ -31,7 +32,7 @@ public class AmazonStorage implements IngestionStorageService
 {
 
     @Autowired
-    private AmazonS3 s3Client;
+    private TransferManager transferManager;
 
     @Value("${ecms.aws.bucketName}")
     private String bucketName;
@@ -46,7 +47,7 @@ public class AmazonStorage implements IngestionStorageService
 
 
     /**
-     *upload file to amzone s3 bucket
+     *upload file to amazon s3 bucket
      *
      *@param fileName
      *@param fileStram
@@ -54,27 +55,41 @@ public class AmazonStorage implements IngestionStorageService
      *@param fileSize
      *@return fileLocation - Uploaded file location
      *@exception AmazonClientException - If amazon s3 put request failed 
-     * @throws IOException 
+     *@throws IOException 
+     *@throws InterruptedException 
      *
      */
     @Override
-    public Map<String, Object> uploadFile(String fileName, InputStream fileStream, String fileContentType, Long fileSize) throws AmazonClientException, IOException
+    public Map<String, Object> uploadFile(String fileName, InputStream fileStream, String fileContentType, Long fileSize)
+        throws AmazonClientException, IOException, InterruptedException
     {
-        logger.debug(" UPLOADING FILE TO AMAZON S3 BUCKET START ");
+        logger.info(" AMAZONE SERVICE : UPLOADING " + fileName + " FILE TO AMAZON S3 BUCKET START ");
+
+        //SET BUCKET NAME WITH PROPER PREFIX
         String bucketName = getBucketName(fileContentType);
+
+        //CREATE UNIQUE KEY TO USE AS FILE NAME AT AWS S3 BUCKET
         String fileKey = generateFileKey(fileName);
 
+        //OBJECT WHICH CONTAINS DATA TO BE STORE ON S3 BUCKET
         PutObjectRequest putObjectRequest = getPutObjectRequest(fileKey, fileStream, fileContentType, bucketName, fileSize);
+        
+        logger.debug(" AMAZONE SERVICE : TRANSFER MANAGER UPLOADING FILE TO AMAZON S3  ");
+        Upload myUpload = this.transferManager.upload(putObjectRequest);
 
-        this.s3Client.putObject(putObjectRequest);
-        String fileURL = this.s3Client.getUrl(bucketName, fileKey).toString();
+        myUpload.waitForCompletion();
+
+        logger.debug("AMAZONE SERVICE : " + fileName + "  FILE UPLOADED REQUEST COMPLETED ");
 
         String fileLocation = putObjectRequest.getBucketName() + "/" + putObjectRequest.getKey();
+        String fileURL = this.transferManager.getAmazonS3Client().getUrl(bucketName, fileKey).toString();
 
         Map<String, Object> fileMetaData = new HashMap<String, Object>();
         fileMetaData.put(IngestionConstants.FILE_INGESTION_URL, fileURL);
         fileMetaData.put(IngestionConstants.FILE_LOCATION, fileLocation);
         fileMetaData.put(IngestionConstants.FILE_KEY, fileKey);
+        logger.debug("AMAZONE SERVICE : " + fileName + "  FILE UPLOADED TO AMAZON S3 BUCKET SUCCESSFULLY  ");
+
         return fileMetaData;
 
     }
@@ -111,7 +126,7 @@ public class AmazonStorage implements IngestionStorageService
 
     /**
      * Returns BucketName with sub-folder and sub-folder depends on filecontentType.
-     * Bucketname with sub-folder select dynamicaly to store file in particuler folder on amazon s3 bucket
+     * BucketName with sub-folder select dynamically to store file in particular folder on amazon s3 bucket
      * 
      * @param fileContentType
      * @return tempBucketName Destination folder bucket
@@ -134,7 +149,7 @@ public class AmazonStorage implements IngestionStorageService
 
 
     /**
-     * Returns unique key.which is used as name on amazon s3 bucket.
+     * Returns unique key.which is used as name at amazon s3 bucket.
      * 
      * @param fileName
      * @return key - unique key

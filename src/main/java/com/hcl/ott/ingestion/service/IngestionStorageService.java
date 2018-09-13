@@ -14,5 +14,6 @@ import com.amazonaws.AmazonClientException;
  */
 public interface IngestionStorageService
 {
-    public Map<String, Object> uploadFile(String fileName, InputStream fileStream, String fileContentType, Long contentLength) throws AmazonClientException, IOException;
+    public Map<String, Object> uploadFile(String fileName, InputStream fileStream, String fileContentType, Long contentLength)
+        throws AmazonClientException, IOException, InterruptedException;
 }
