@@ -84,14 +84,31 @@ public class MetaDataMapper
     }
 
 
+    /**
+     * Return's List of data Transfer Object DTO
+     * 
+     * @param metaDataList - Page<MetaDataModel>
+     * @return List<MetaDataDTO> 
+     */
     public static List<MetaDataDTO> makeMetaDataDTOList(Page<MetaDataModel> metaDataList)
     {
-        // TODO Auto-generated method stub
         return metaDataList
             .stream()
             .map(
                 m -> makeMetaDataDTO(m))
             .collect(Collectors.toList());
+    }
+
+
+    /**
+     * Return's List of Response Data Transfer Object DTO
+     * 
+     * @param metaDataDBOList - List<MetaDataModel>
+     * @return List<MetaDataDTO> 
+     */
+    public static List<MetaDataDTO> makeMetaDataDTOListResponse(List<MetaDataModel> metaDataDBOList)
+    {
+        return metaDataDBOList.stream().map(dbo -> makeMetaDataDTO(dbo)).collect(Collectors.toList());
     }
 
 }

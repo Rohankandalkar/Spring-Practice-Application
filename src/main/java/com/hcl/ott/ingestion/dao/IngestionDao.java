@@ -1,5 +1,6 @@
 package com.hcl.ott.ingestion.dao;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
@@ -25,5 +26,8 @@ public interface IngestionDao
 
 
     MetaDataModel getMetaDataByJobId(String title);
+
+
+    List<MetaDataModel> saveMetaDataList(List<MetaDataModel> metaDataList);
 
 }

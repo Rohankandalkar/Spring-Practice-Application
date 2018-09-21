@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
@@ -348,49 +349,26 @@ public class IngestionServiceImpl implements IngestionService
     }
 
 
-    @SuppressWarnings("rawtypes")
+    /** 
+     * Returns List<MetaDataDTO>  
+     *
+     * @param MultipartFile - Excel sheet contains name of files
+     * @return List<MetaDataDTO> - list of uploaded files to amazon s3
+     * @throws IngestionException 
+     */
     @Override
     public List<MetaDataDTO> uploadMultipalFiles(MultipartFile excelFile) throws IngestionException
     {
         logger.info(" INGESTION SERVICE :  READING " + excelFile.getOriginalFilename() + " EXCEL FILE TO DOWNLOAD FILES FROM FTP START ");
-        DataFormatter dataFormatter = new DataFormatter();
 
-        List<MetaDataDTO> metaDataDTOList = new ArrayList<>();
-        List<String> tempFileNames = new ArrayList<>();
         Map<String, Object> fileData = null;
-        Map<String, Object> fileMetaData = null;
 
         //READ EXCEL SHEET AND ADD FILE-NAME'S INTO LIST TO DOWNLOAD FROM FTP SERVER
         //IN THIS LOGIC WE ASSUME THAT FILE NAME IS AT FIRST COLUMN OF EVERY ROWES. 
-        try
-        {
-            Workbook workbook = WorkbookFactory.create(excelFile.getInputStream());
-            workbook.forEach(
-                sheet -> sheet.forEach(
-                    row -> {
-                        if (row.getRowNum() != 0)
-                        {
-                            row.forEach(cell -> {
-                                String cellvalue = dataFormatter.formatCellValue(cell);
-                                if (cell.getColumnIndex() == 0)
-                                {
-                                    tempFileNames.add(cellvalue);
-                                }
-                            });
-                        }
-                    }));
-
-            workbook.close();
-
-        }
-        catch (Exception e)
-        {
-            logger.error(" INGESTION SERVICE :   READING EXCEL FILE TO DOWNLOAD FILES FROM FTP IS FAILED EXCEPTION IS :- " + e.getMessage());
-            throw new IngestionException(e.getMessage());
-        }
+        List<MetaDataDTO> metaDataDTOList = getExcelFileDetails(excelFile);
 
         //GET DISTINCT FILE NAMES FROM EXCEL SHEET
-        List<String> excelFileNames = tempFileNames.stream().distinct().collect(Collectors.toList());
+        List<String> excelFileNames = metaDataDTOList.stream().map(m -> m.getTitle()).distinct().collect(Collectors.toList());
 
         //TEMPRERY HARDCODED OBJECT IT CONTAINS CREDITIALS OF FTP USER'S.
         UserCredentials userCredentials = new UserCredentials("localhost", "rohan@hcl.com", "hcl", "21", excelFileNames);
@@ -407,17 +385,79 @@ public class IngestionServiceImpl implements IngestionService
             throw new IngestionException(e.getMessage());
         }
 
-        //MAP CONTAINS INPUTSTREAMS OF FILES . KEY IS NAME OF REQUESTED FILE.
-        Map mediaFileStreamMap = (Map) fileData.get(IngestionConstants.FTP_INPUTSTREAM);
+        List<MetaDataModel> metaDataModelList = uploadMultipalFTPFiles(metaDataDTOList, fileData);
 
-        //MAP CONTAINS SIZE OF FILES . KEY IS NAME OF REQUESTED FILE.
+        List<MetaDataModel> metaDataDBOList = ingestionDao.saveMetaDataList(metaDataModelList);
+
+        List<MetaDataDTO> metaDataDTOListResponse = MetaDataMapper.makeMetaDataDTOListResponse(metaDataDBOList);
+
+        logger.info(" INGESTION SERVICE :  FILES FROM INPUT EXCEL SHEET " + excelFile.getOriginalFilename() + " INGESTED SUCCESSFULL ");
+
+        return metaDataDTOListResponse;
+    }
+
+
+    /** 
+     * Returns List<MetaDataDTO> - This Function reads Excel sheet and add details of files in MetaDataDTO and 
+     *                             return it's list
+     *
+     * @param MultipartFile - Excel sheet contains name of files
+     * @return List<MetaDataDTO> - list of files Details which we have to download from FTP server
+     * @throws IngestionException 
+     */
+    private List<MetaDataDTO> getExcelFileDetails(MultipartFile excelFile) throws IngestionException
+    {
+        List<MetaDataDTO> metaDataDTOList = new ArrayList<MetaDataDTO>();
+        try
+        {
+            Workbook workbook = WorkbookFactory.create(excelFile.getInputStream());
+            workbook.forEach(
+                sheet -> sheet.forEach(
+                    row -> {
+                        if (row.getRowNum() != 0)
+                        {
+                            Iterator<Cell> cell = row.cellIterator();
+                            while (cell.hasNext())
+                            {
+                                MetaDataDTO ftpFileMetaData = new MetaDataDTO();
+                                ftpFileMetaData.setTitle(cell.next().getStringCellValue());
+                                ftpFileMetaData.setDescription(cell.next().getStringCellValue());
+                                String[] strArray = new String[1];
+                                strArray[0] = cell.next().getStringCellValue();
+                                ftpFileMetaData.setTags(strArray);
+                                ftpFileMetaData.setFileContentType(cell.next().getStringCellValue());
+                                metaDataDTOList.add(ftpFileMetaData);
+                            }
+                        }
+                    }));
+
+            workbook.close();
+
+        }
+        catch (Exception e)
+        {
+            logger.error(" INGESTION SERVICE :   READING EXCEL FILE TO DOWNLOAD FILES FROM FTP IS FAILED EXCEPTION IS :- " + e.getMessage());
+            throw new IngestionException(e.getMessage());
+        }
+        return metaDataDTOList;
+    }
+
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private List<MetaDataModel> uploadMultipalFTPFiles(List<MetaDataDTO> metaDataDTOList, Map<String, Object> fileData) throws IngestionException
+    {
+        List<MetaDataModel> metaDataModelListResponse = new ArrayList<>();
+        Map<String, Object> fileMetaData = null;
+
+        //MAP CONTAINS INPUTSTREAMS OF FILES . KEY IS NAME OF REQUESTED FILE AND VALUE IS INPUTSTREAM OF THAT FILE.
+        Map<String, InputStream> mediaFileStreamMap = (Map<String, InputStream>) fileData.get(IngestionConstants.FTP_INPUTSTREAM);
+
+        //MAP CONTAINS SIZE OF FILES . KEY IS NAME OF REQUESTED FILE AND VALUE IS SIZE OF THAT FILE..
         Map mediaFileSizeMap = (Map) fileData.get(IngestionConstants.FTP_CONTENTLENGTH);
 
-        for (String fileName : userCredentials.getRemoteFile())
+        for (MetaDataDTO tempMetaDataDto : metaDataDTOList)
         {
-            String ftpFileName = fileName;
-
-            String mediaContentType = "video";
+            String ftpFileName = tempMetaDataDto.getTitle();
 
             //SET DOWNLOADED FILE'S INPUTSTRAM FROM MAP ACCORDING TO KEY
             InputStream mediaFileStream = (InputStream) mediaFileStreamMap.get(ftpFileName);
@@ -428,8 +468,8 @@ public class IngestionServiceImpl implements IngestionService
             try
             {
                 //SEND FILE'S INPUTSTREAM AMD OTHER DETAILS TO AMZONE SERVICE TO UPLOAD IN AMAZON S3 BUCKET  
-                logger.debug(" INGESTION SERVICE :   UPLOADING " + fileName + " FILE FROM FTP TO AMAZONE S3 BUCKET ");
-                fileMetaData = ingestionStorageService.uploadFile(fileName, mediaFileStream, mediaContentType, contentSize);
+                logger.debug(" INGESTION SERVICE :   UPLOADING " + ftpFileName + " FILE FROM FTP TO AMAZONE S3 BUCKET ");
+                fileMetaData = ingestionStorageService.uploadFile(ftpFileName, mediaFileStream, tempMetaDataDto.getFileContentType(), contentSize);
             }
             catch (Exception e)
             {
@@ -439,25 +479,19 @@ public class IngestionServiceImpl implements IngestionService
 
             logger.debug(" INGESTION SERVICE :   FTP FILE " + ftpFileName + " SUCCESSFULLY UPLOADED TO AWS S3 BUCKET  ");
 
-            MetaDataDTO metaDataDTO = getMetaDataDTO(fileMetaData, contentSize, mediaContentType);
-            
+            MetaDataDTO metaDataDTO = getMetaDataDTO(fileMetaData, contentSize, tempMetaDataDto.getFileContentType());
+
             MetaDataModel metaDataModel = MetaDataMapper.makeMetaDataDBO(metaDataDTO);
 
             metaDataModel.setTitle(ftpFileName);
-            //SAVE META-DATA OF FILES TO DATABASE
-            MetaDataModel metaDataDBO = this.ingestionDao.saveMetaData(metaDataModel);
+            metaDataModel.setDescription(tempMetaDataDto.getDescription());
+            metaDataModel.setTags(tempMetaDataDto.getTags());
 
-            logger.debug(" INGESTION SERVICE :  META - DATA OF " + metaDataDBO.getTitle() + " IS ADDED TO DATABASE SUCCESSFULLY ");
-
-            MetaDataDTO metaDataDT = MetaDataMapper.makeMetaDataDTO(metaDataDBO);
-
-            metaDataDTOList.add(metaDataDT);
+            metaDataModelListResponse.add(metaDataModel);
 
         }
 
-        logger.info(" INGESTION SERVICE :  FILES FROM INPUT EXCEL SHEET " + excelFile.getOriginalFilename() + " INGESTED SUCCESSFULL ");
-
-        return metaDataDTOList;
+        return metaDataModelListResponse;
     }
 
 }

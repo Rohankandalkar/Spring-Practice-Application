@@ -1,5 +1,7 @@
 package com.hcl.ott.ingestion.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ public class IngestionDaoImpl implements IngestionDao
      */
     public MetaDataModel saveMetaData(MetaDataModel metaData)
     {
+
         return this.metaDataRepository.save(metaData);
 
     }
@@ -60,7 +63,7 @@ public class IngestionDaoImpl implements IngestionDao
     public MetaDataModel getMetaDataById(String id) throws NoSuchElementException
     {
         MetaDataModel metaDataModel = this.metaDataRepository.findById(id).get();
-       
+
         return metaDataModel;
     }
 
@@ -75,8 +78,20 @@ public class IngestionDaoImpl implements IngestionDao
     public MetaDataModel getMetaDataByJobId(String jobId) throws NoSuchElementException
     {
         MetaDataModel metaDataModel = this.metaDataRepository.findByJobId(jobId);
-        System.out.println(" Completed id "+metaDataModel.getJobId());
+
         return metaDataModel;
+    }
+
+    /** 
+     * Returns List of MetaData Object from database 
+     * 
+     * @param List<MetaDataModel> - List of MetaData Object
+     * @return List<MetaDataModel> - List of MetaData saved Objects 
+     */
+    @Override
+    public List<MetaDataModel> saveMetaDataList(List<MetaDataModel> metaDataList)
+    {
+        return this.metaDataRepository.saveAll(metaDataList);
     }
 
 }
