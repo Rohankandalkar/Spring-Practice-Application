@@ -33,6 +33,7 @@ public class MetaDataMapper
             model.setFileSize(metaDataDTO.getFileSize());
             model.setFileContentType(metaDataDTO.getFileContentType());
             model.setFileStatus(metaDataDTO.getFileStatus());
+            model.setFileChecksum(metaDataDTO.getFileChecksum());
             return model;
         }
         model.setId(metaDataDTO.getId());
@@ -42,6 +43,7 @@ public class MetaDataMapper
         model.setFileContentType(metaDataDTO.getFileContentType());
         model.setFileKey(metaDataDTO.getFileKey());
         model.setFileSize(metaDataDTO.getFileSize());
+        model.setFileChecksum(metaDataDTO.getFileChecksum());
         model.setIngestionFileLocation(metaDataDTO.getIngestionFileLocation());
         model.setIngestionURL(metaDataDTO.getIngestionURL());
         model.setProcessFileLocation(metaDataDTO.getIngestionFileLocation());
@@ -69,6 +71,7 @@ public class MetaDataMapper
         metaDataDTO.setFileContentType(metaDataDBO.getFileContentType());
         metaDataDTO.setFileKey(metaDataDBO.getFileKey());
         metaDataDTO.setFileSize(metaDataDBO.getFileSize());
+        metaDataDTO.setFileChecksum(metaDataDBO.getFileChecksum());
         metaDataDTO.setIngestionFileLocation(metaDataDBO.getIngestionFileLocation());
         metaDataDTO.setIngestionURL(metaDataDBO.getIngestionURL());
         metaDataDTO.setProcessFileLocation(metaDataDBO.getProcessFileLocation());
@@ -108,7 +111,17 @@ public class MetaDataMapper
      */
     public static List<MetaDataDTO> makeMetaDataDTOListResponse(List<MetaDataModel> metaDataDBOList)
     {
-        return metaDataDBOList.stream().map(dbo -> makeMetaDataDTO(dbo)).collect(Collectors.toList());
+        return metaDataDBOList.stream().map(metaDataModel -> makeMetaDataDTO(metaDataModel)).collect(Collectors.toList());
+    }
+
+
+    /**
+     * @param metaDataDTOList
+     * @return
+     */
+    public static List<MetaDataModel> makeMetaDataDBOList(List<MetaDataDTO> metaDataDTOList)
+    {
+        return metaDataDTOList.stream().map(metaDataDTO -> makeMetaDataDBO(metaDataDTO)).collect(Collectors.toList());
     }
 
 }

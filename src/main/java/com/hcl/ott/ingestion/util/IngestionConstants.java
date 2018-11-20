@@ -22,9 +22,16 @@ public class IngestionConstants
     public static final String FILE_INGESTION_URL = "FILE_INGESTION_URL";
     public static final String FILE_CONTENT_TYPE_VIDEO = "video";
     public static final String FILE_CONTENT_TYPE_AUDIO = "audio";
+    public static final String FILE_DIRECTORY = "C:\\Users\\kandalakar.r\\Documents\\OTT POC\\OTT_DIRECTORY";
     public static final String FTP_INPUTSTREAM = "FTPFileStream";
     public static final String FTP_CONTENTLENGTH = "FTPFilecontentLength";
-
-
+    public static final String AWS_FILE_CHECKSUM = "AWS_FILE_MURGED_ETAG_CHECKSUM";
+    public static final String ALGORITHM_CHECKSUM = "CALCULATED_FILE_CHECKSUM_USING_ALGORITHM";
+    public static final String PART_ETAGS = "LIST_OF_ETAGS_OF_PARTS";
+    public static final String VIDEO_DIRECTORY = "video";
+    public static final String AUDIO_DIRECTORY = "audio";
+    public static final long MULTIPART_PART_SIZE = 5 * 1024 * 1024;
+    public static final long FILE_UPLOAD_LIMIT = 1000 * 1024 * 1024;
+    public static final String VIDEO_FILE_TYPE = "video";
 
 }

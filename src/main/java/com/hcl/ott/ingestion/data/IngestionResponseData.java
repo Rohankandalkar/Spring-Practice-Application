@@ -1,12 +1,16 @@
 package com.hcl.ott.ingestion.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
- * Class for custome Ingestion Response Data  
+ * Class for custom Response Data  
  * 
  * @author kandalakar.r
  *
  * @param <T>
  */
+@JsonInclude(Include.NON_NULL)
 public class IngestionResponseData<T>
 {
     private String message;

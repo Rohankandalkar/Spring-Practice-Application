@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Mapper class for Database Model object
+ * DTO class of MetaDataModel
  * 
  * @author kandalakar.r
  *
@@ -25,6 +25,8 @@ public class MetaDataDTO
 
     private Long fileSize;
 
+    private String fileChecksum;
+
     private String fileContentType;
 
     private String ingestionFileLocation;
@@ -44,6 +46,7 @@ public class MetaDataDTO
     private String publishURL;
 
     private String fileStatus;
+
 
     public MetaDataDTO()
     {
@@ -108,6 +111,18 @@ public class MetaDataDTO
     public void setId(String id)
     {
         this.id = id;
+    }
+
+
+    public String getFileChecksum()
+    {
+        return fileChecksum;
+    }
+
+
+    public void setFileChecksum(String fileChecksum)
+    {
+        this.fileChecksum = fileChecksum;
     }
 
 

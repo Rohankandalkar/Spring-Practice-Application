@@ -2,12 +2,19 @@ package com.hcl.ott.ingestion.data;
 
 import java.util.List;
 
+/**
+ * DTO Class for FTP file upload Request
+ * 
+ * @author kandalakar.r
+ *
+ */
 public class UserCredentials
 {
     private String host;
     private String user;
     private String password;
     private String port;
+    private String clientSideChecksum;
     private List<String> remoteFile;
 
 
@@ -25,6 +32,18 @@ public class UserCredentials
         this.password = password;
         this.port = port;
         this.remoteFile = remoteFile;
+    }
+
+
+    public String getClientSideChecksum()
+    {
+        return clientSideChecksum;
+    }
+
+
+    public void setClientSideChecksum(String clientSideChecksum)
+    {
+        this.clientSideChecksum = clientSideChecksum;
     }
 
 
@@ -86,8 +105,5 @@ public class UserCredentials
     {
         this.remoteFile = remoteFile;
     }
-
-
-   
 
 }

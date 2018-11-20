@@ -1,7 +1,9 @@
 package com.hcl.ott.ingestion.service.Async.Impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,6 +12,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.hcl.ott.ingestion.data.MetaDataDTO;
 import com.hcl.ott.ingestion.data.UserCredentials;
 import com.hcl.ott.ingestion.exception.IngestionException;
@@ -26,18 +30,17 @@ public class IngestionAsyncServiceImpl implements IngestionAsyncService
     private IngestionService ingestionService;
 
 
-    @Async
     @Override
-    public CompletableFuture<MetaDataDTO> uploadFile(MultipartFile mediaFile) throws IngestionException
+    public CompletableFuture<MetaDataDTO> uploadFile(MultipartFile mediaFile, String fileChecksum) throws IngestionException, ExecutionException, IOException
     {
-        MetaDataDTO metaDataDTO = this.ingestionService.uploadFile(mediaFile);
+        MetaDataDTO metaDataDTO = this.ingestionService.uploadFile(mediaFile, fileChecksum);
         return CompletableFuture.completedFuture(metaDataDTO);
     }
 
 
     @Async
     @Override
-    public CompletableFuture<List<MetaDataDTO>> uploadMultipalFiles(MultipartFile mediaFile) throws IngestionException
+    public CompletableFuture<List<MetaDataDTO>> uploadMultipalFiles(MultipartFile mediaFile) throws IngestionException, IOException, AmazonServiceException, AmazonClientException, InterruptedException
     {
         List<MetaDataDTO> metaDataDTO = this.ingestionService.uploadMultipalFiles(mediaFile);
         return CompletableFuture.completedFuture(metaDataDTO);
@@ -61,7 +64,7 @@ public class IngestionAsyncServiceImpl implements IngestionAsyncService
 
 
     @Override
-    public CompletableFuture<MetaDataDTO> uploadFtpFile(UserCredentials userCredentials) throws IngestionException
+    public CompletableFuture<MetaDataDTO> uploadFtpFile(UserCredentials userCredentials) throws IngestionException, IOException
     {
         MetaDataDTO metaDataDTO = this.ingestionService.uploadFtpFile(userCredentials);
         return CompletableFuture.completedFuture(metaDataDTO);

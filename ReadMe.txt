@@ -1,3 +1,5 @@
 OTT POC
 
-Ingestion service code repository by Mr. Rohan
+Ingestion service code repository by Rohan Kandalkar.
+
+

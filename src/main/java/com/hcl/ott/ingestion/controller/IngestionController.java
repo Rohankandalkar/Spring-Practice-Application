@@ -1,5 +1,6 @@
 package com.hcl.ott.ingestion.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -51,10 +52,11 @@ public class IngestionController
 
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<MetaDataDTO>> uploadFile(@RequestParam(value = "file", required = true) MultipartFile mediaFile)
-        throws IngestionException, InterruptedException, ExecutionException
+    public ResponseEntity<IngestionResponseData<MetaDataDTO>> uploadFile(
+        @RequestBody(required = true) MultipartFile file, @RequestParam(value = "fileChecksum", required = false) String fileChecksum)
+        throws IngestionException, InterruptedException, ExecutionException, IOException
     {
-        CompletableFuture<MetaDataDTO> fileMetaData = this.ingestionAsyncService.uploadFile(mediaFile);
+        CompletableFuture<MetaDataDTO> fileMetaData = this.ingestionAsyncService.uploadFile(file, fileChecksum);
         IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(fileMetaData.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.CREATED);
 
@@ -62,8 +64,8 @@ public class IngestionController
 
 
     @RequestMapping(value = "/ftp/files", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IngestionResponseData<List<MetaDataDTO>>> uploadMultipalFiles(@RequestParam(value = "file", required = true) MultipartFile excelFile)
-        throws IngestionException, InterruptedException, ExecutionException
+    public ResponseEntity<IngestionResponseData<List<MetaDataDTO>>> uploadMultipalFiles(@RequestBody MultipartFile excelFile)
+        throws IngestionException, InterruptedException, ExecutionException, IOException
     {
         CompletableFuture<List<MetaDataDTO>> fileMetaData = this.ingestionAsyncService.uploadMultipalFiles(excelFile);
         IngestionResponseData<List<MetaDataDTO>> IngestionResponseData = ContentMapper.makeIngestionResponseData(fileMetaData.get());
@@ -83,13 +85,12 @@ public class IngestionController
 
     @RequestMapping(value = "/ftp", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IngestionResponseData<MetaDataDTO>> uploadFtpFile(@RequestBody UserCredentials userCredentials)
-        throws IngestionException, InterruptedException, ExecutionException
+        throws IngestionException, InterruptedException, ExecutionException, IOException
 
     {
         CompletableFuture<MetaDataDTO> metaDataDT = this.ingestionAsyncService.uploadFtpFile(userCredentials);
         IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.CREATED);
-
     }
 
 
@@ -97,7 +98,6 @@ public class IngestionController
     public ResponseEntity<IngestionResponseData<MetaDataDTO>> updateMetaDataStatus(@RequestBody MetaDataDTO metaDataDTO)
         throws IngestionException, InterruptedException, ExecutionException
     {
-        System.out.println("UPDATE THIS STATUS :" + metaDataDTO.getFileStatus());
         CompletableFuture<MetaDataDTO> metaDataDT = this.ingestionAsyncService.updateMetatdateStatus(metaDataDTO);
         IngestionResponseData<MetaDataDTO> IngestionResponseData = ContentMapper.makeIngestionResponseData(metaDataDT.get());
         return new ResponseEntity<IngestionResponseData<MetaDataDTO>>(IngestionResponseData, HttpStatus.OK);

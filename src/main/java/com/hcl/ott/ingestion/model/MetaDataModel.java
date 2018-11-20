@@ -1,5 +1,7 @@
 package com.hcl.ott.ingestion.model;
 
+import java.util.Arrays;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -27,9 +29,22 @@ public class MetaDataModel
 
     private String fileContentType;
 
+    private String fileChecksum;
+
     private String ingestionFileLocation;
 
     private String ingestionURL;
+
+
+    @Override
+    public String toString()
+    {
+        return "MetaDataModel [metaDataId="
+            + metaDataId + ", title=" + title + ", description=" + description + ", tags=" + Arrays.toString(tags) + ", fileKey=" + fileKey + ", fileSize=" + fileSize
+            + ", fileContentType=" + fileContentType + ", fileChecksum=" + fileChecksum + ", ingestionFileLocation=" + ingestionFileLocation + ", ingestionURL=" + ingestionURL
+            + ", ProcessFileLocation=" + ProcessFileLocation + ", processURL=" + processURL + ", processFormat=" + processFormat + ", jobId=" + jobId + ", PublishFileLocation="
+            + PublishFileLocation + ", publishURL=" + publishURL + ", fileStatus=" + fileStatus + "]";
+    }
 
     private String ProcessFileLocation;
 
@@ -77,7 +92,8 @@ public class MetaDataModel
 
 
     public MetaDataModel(
-        String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
+        String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String fileChecksum, String ingestionFileLocation,
+        String ingestionURL,
         String processFileLocation, String processURL, String processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
@@ -87,6 +103,7 @@ public class MetaDataModel
         this.fileKey = fileKey;
         this.fileSize = fileSize;
         this.fileContentType = fileContentType;
+        this.fileChecksum = fileChecksum;
         this.ingestionFileLocation = ingestionFileLocation;
         this.ingestionURL = ingestionURL;
         ProcessFileLocation = processFileLocation;
@@ -276,6 +293,18 @@ public class MetaDataModel
     public void setFileStatus(String fileStatus)
     {
         this.fileStatus = fileStatus;
+    }
+
+
+    public String getFileChecksum()
+    {
+        return fileChecksum;
+    }
+
+
+    public void setFileChecksum(String fileChecksum)
+    {
+        this.fileChecksum = fileChecksum;
     }
 
 }

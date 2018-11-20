@@ -1,5 +1,7 @@
 package com.hcl.ott.ingestion.configuration;
 
+import java.util.concurrent.Executors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,14 +38,14 @@ public class AmazonStorageConfiguration
 
 
     /**
-     * Gets an Amazon transfer manager.
+     * Gets an TransferManager.
      * create a client connection based on credentials
      * save your credentials at application.properties. 
      *
      * accessKey = YOUR_ACCESS_KEY_ID
      * secretKey = YOUR_SECRET_ACCESS_KEY
      * 
-     * @return a transfer manager
+     * @return a TransferManager
      */
     @Bean
     public TransferManager getTransferManager()
@@ -65,6 +67,9 @@ public class AmazonStorageConfiguration
             TransferManagerBuilder
                 .standard()
                 .withS3Client(s3Client)
+                .withMinimumUploadPartSize(Long.valueOf(5 * 1024 * 1024))
+                .withMultipartUploadThreshold(Long.valueOf(2 * 1024 * 1024))
+                .withExecutorFactory(() -> Executors.newFixedThreadPool(20))
                 .build();
 
         return transferManager;
