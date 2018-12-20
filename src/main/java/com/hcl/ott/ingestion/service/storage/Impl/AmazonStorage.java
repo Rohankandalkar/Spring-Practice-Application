@@ -149,7 +149,7 @@ public class AmazonStorage implements IngestionStorageService
         metadata.addUserMetadata("x-amz-meta-" + fileDetailsData.getFileKey(), contentMD5);
 
         putObjectRequest.setMetadata(metadata);
-        putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+        //putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
 
         AmazonUploadListener progressListener = new AmazonUploadListener();
         putObjectRequest.withGeneralProgressListener(progressListener);
