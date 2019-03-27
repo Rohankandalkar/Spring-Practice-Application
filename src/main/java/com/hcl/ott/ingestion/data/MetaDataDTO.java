@@ -1,5 +1,7 @@
 package com.hcl.ott.ingestion.data;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -14,37 +16,21 @@ public class MetaDataDTO
 {
 
     private String id;
-
     private String title;
-
     private String description;
-
     private String[] tags;
-
     private String fileKey;
-
     private Long fileSize;
-
     private String fileChecksum;
-
     private String fileContentType;
-
     private String ingestionFileLocation;
-
     private String ingestionURL;
-
-    private String processFileLocation;
-
+    private List<String> processFileLocation;//change
     private String processURL;
-
-    private String processFormat;
-
+    private List<String> processFormat; //change
     private String jobId;
-
     private String publishFileLocation;
-
     private String publishURL;
-
     private String fileStatus;
 
 
@@ -68,7 +54,7 @@ public class MetaDataDTO
 
     public MetaDataDTO(
         String id, String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String ingestionFileLocation, String ingestionURL,
-        String processFileLocation, String processURL, String processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
+        List<String> processFileLocation, String processURL, List<String> processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
         this.id = id;
@@ -90,13 +76,13 @@ public class MetaDataDTO
     }
 
 
-    public String getProcessFormat()
+    public List<String> getProcessFormat()
     {
         return processFormat;
     }
 
 
-    public void setProcessFormat(String processFormat)
+    public void setProcessFormat(List<String> processFormat)
     {
         this.processFormat = processFormat;
     }
@@ -222,13 +208,13 @@ public class MetaDataDTO
     }
 
 
-    public String getProcessFileLocation()
+    public List<String> getProcessFileLocation()
     {
         return processFileLocation;
     }
 
 
-    public void setProcessFileLocation(String processFileLocation)
+    public void setProcessFileLocation(List<String> processFileLocation)
     {
         this.processFileLocation = processFileLocation;
     }

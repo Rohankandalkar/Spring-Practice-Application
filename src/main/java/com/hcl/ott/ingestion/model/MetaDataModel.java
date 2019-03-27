@@ -1,6 +1,7 @@
 package com.hcl.ott.ingestion.model;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -46,11 +47,11 @@ public class MetaDataModel
             + PublishFileLocation + ", publishURL=" + publishURL + ", fileStatus=" + fileStatus + "]";
     }
 
-    private String ProcessFileLocation;
+    private List<String> ProcessFileLocation;
 
     private String processURL;
 
-    private String processFormat;
+    private List<String> processFormat;
 
     private String jobId;
 
@@ -94,7 +95,7 @@ public class MetaDataModel
     public MetaDataModel(
         String title, String description, String[] tags, String fileKey, Long fileSize, String fileContentType, String fileChecksum, String ingestionFileLocation,
         String ingestionURL,
-        String processFileLocation, String processURL, String processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
+        List<String> processFileLocation, String processURL, List<String> processFormat, String jobId, String publishFileLocation, String publishURL, String fileStatus)
     {
         super();
         this.title = title;
@@ -116,13 +117,13 @@ public class MetaDataModel
     }
 
 
-    public String getProcessFormat()
+    public List<String> getProcessFormat()
     {
         return processFormat;
     }
 
 
-    public void setProcessFormat(String processFormat)
+    public void setProcessFormat(List<String> processFormat)
     {
         this.processFormat = processFormat;
     }
@@ -236,13 +237,13 @@ public class MetaDataModel
     }
 
 
-    public String getProcessFileLocation()
+    public List<String> getProcessFileLocation()
     {
         return ProcessFileLocation;
     }
 
 
-    public void setProcessFileLocation(String processLocation)
+    public void setProcessFileLocation(List<String> processLocation)
     {
         this.ProcessFileLocation = processLocation;
     }

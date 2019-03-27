@@ -509,28 +509,30 @@ public class IngestionServiceImpl implements IngestionService
 
             Workbook workbook = WorkbookFactory.create(excelFile.getInputStream());
 
-            workbook.forEach(
-                sheet -> sheet.forEach(
-                    row -> {
-                        if (row.getRowNum() != 0)
-                        {
-                            Iterator<Cell> cell = row.cellIterator();
-                            while (cell.hasNext())
-                            {
-                                FileDetailsData ftpFileData = new FileDetailsData();
+            workbook
+                .forEach(
+                    sheet -> sheet
+                        .forEach(
+                            row -> {
+                                if (row.getRowNum() != 0)
+                                {
+                                    Iterator<Cell> cell = row.cellIterator();
+                                    while (cell.hasNext())
+                                    {
+                                        FileDetailsData ftpFileData = new FileDetailsData();
 
-                                ftpFileData.setTitle(cell.next().getStringCellValue());
-                                ftpFileData.setDescription(cell.next().getStringCellValue());
+                                        ftpFileData.setTitle(cell.next().getStringCellValue());
+                                        ftpFileData.setDescription(cell.next().getStringCellValue());
 
-                                String[] tags = new String[1];
-                                tags[0] = cell.next().getStringCellValue();
-                                ftpFileData.setTags(tags);
-                                ftpFileData.setFileContentType(cell.next().getStringCellValue());
-                                ftpFileData.setFileChecksum(cell.next().getStringCellValue());
-                                ftpFileDetails.add(ftpFileData);
-                            }
-                        }
-                    }));
+                                        String[] tags = new String[1];
+                                        tags[0] = cell.next().getStringCellValue();
+                                        ftpFileData.setTags(tags);
+                                        ftpFileData.setFileContentType(cell.next().getStringCellValue());
+                                        ftpFileData.setFileChecksum(cell.next().getStringCellValue());
+                                        ftpFileDetails.add(ftpFileData);
+                                    }
+                                }
+                            }));
 
             workbook.close();
 

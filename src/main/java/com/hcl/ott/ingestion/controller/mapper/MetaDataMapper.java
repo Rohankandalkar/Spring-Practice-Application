@@ -46,7 +46,7 @@ public class MetaDataMapper
         model.setFileChecksum(metaDataDTO.getFileChecksum());
         model.setIngestionFileLocation(metaDataDTO.getIngestionFileLocation());
         model.setIngestionURL(metaDataDTO.getIngestionURL());
-        model.setProcessFileLocation(metaDataDTO.getIngestionFileLocation());
+        model.setProcessFileLocation(metaDataDTO.getProcessFileLocation());
         model.setProcessURL(metaDataDTO.getProcessURL());
         model.setJobId(metaDataDTO.getJobId());
         model.setPublishFileLocation(metaDataDTO.getPublishFileLocation());
